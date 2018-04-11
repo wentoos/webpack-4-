@@ -1,0 +1,8 @@
+node_modules/
+.idea/
+.cache/
+.happypack/
+assets/js
+.tags
+[credential]
+    helper = store

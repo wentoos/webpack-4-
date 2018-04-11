@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "module": "es2015",
+        "target": "es6",
+        "moduleResolution": "node",
+        "lib": [
+            "dom",
+            "es2017"
+        ],
+        "allowJs": true,
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "jsx": "preserve",
+        "allowUnreachableCode": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "allowSyntheticDefaultImports": true,
+        "outDir": "assets",
+        "pretty": true,
+        "reactNamespace": "React"
+    },
+    "exclude": [
+        "node_modules",
+        "typings",
+        "assets"
+    ]
+}
