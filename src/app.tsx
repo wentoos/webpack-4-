@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom'
 import './css.css'
-
+// import './app.less'
 //开发模式下用mock.js
 // if (process.env.NODE_ENV !== 'production') {
 // 	let mock = require('./mock/mock');
@@ -14,7 +14,4 @@ import './css.css'
 // import './Style/dps.less';
 
 
-ReactDOM.render(
-	<div>ok</div>,
-	document.getElementById('app')
-);
+ReactDOM.render(<div>ok</div>,document.getElementById('app'));
