@@ -9,6 +9,13 @@
     "plugins": [
         "transform-runtime"
     ],
+    "env": {
+        "production": {
+            "presets": [
+                "minify"
+            ]
+        }
+    },
     "comments": false,
     "compact": false
 }

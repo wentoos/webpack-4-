@@ -1,32 +1,44 @@
 const os = require('os');
 const path = require('path');
 const webpack = require('webpack')
+const WebpackDevServer = require("webpack-dev-server");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");//css单独打包
 const HtmlWebpackPlugin = require('html-webpack-plugin'); //生成html
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');//自动打开浏览器
+const MinifyPlugin = require("babel-minify-webpack-plugin");
 const HappyPack = require('happypack');// 多线程操作
 const happyThreadPool = HappyPack.ThreadPool({
     size: os.cpus().length
 });
 
-module.exports = {
-    entry: './src/app.tsx',
-
-    vendors: [
-        'react', 'react-dom', '@types/react-dom', "@types/react", 'react-router', 'react-redux', 'redux', 'redux-thunk', 'react-transition-group', 'prop-types', 'swiper', 'fastclick',
-    ],
+const config = {
+    entry: {
+        app: './src/app.tsx',
+        vendors: [
+            'react', 'react-dom'
+        ]
+    },
     devtool: 'inline-source-map',//指向错误代码
     output: {
         path: path.resolve("", '/dist'),
-        filename: 'js/bundle.[hash:8].js',
+        filename: 'js/bundle.[name].[hash:8].js',
         chunkFilename: 'js/[name].[hash:8].min.js',
+        // publicPath: '/'
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js", ".css", ".less", ".json"]
     },
     optimization: {
         splitChunks: {
-            name: 'vendors',
+            cacheGroups: {
+                commons: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: "vendors",
+                    chunks: "async",
+                    minChunks: 2,
+                    // automaticNameDelimiter: "-"
+                }
+            }
         }
     },
     module: {
@@ -34,15 +46,16 @@ module.exports = {
             {
                 test: /\.css$/,
                 exclude: /^node_modules$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader'
-                ]
+                use: [MiniCssExtractPlugin.loader,'css-loader']
+            },
+            {
+                test: /\.less$/,
+                exclude: /^node_modules$/,
+                use: [MiniCssExtractPlugin.loader, 'less-loader']
             },
             {
                 test: /\.(png|jpg|jpeg)$/i,
                 exclude: /^node_modules$/,
-                //注意后面那个limit的参数，当你图片大小小于这个限制的时候，会自动启用base64编码图片(只能是相对路径图片编码background:url(../img/file.png))
                 use: ['url-loader?limit=8192&name=img/[hash:8].[name].[ext]']
             },
             {
@@ -67,6 +80,7 @@ module.exports = {
         ]
     },
     plugins: [
+        // new MinifyPlugin({}),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './template/index.html'
@@ -85,3 +99,21 @@ module.exports = {
     ]
 };
 
+const compiler = webpack(config);
+
+const server = new WebpackDevServer(compiler, {
+
+    // publicPath: config.output.publicPath,//服务器资源路径
+    // disableHostCheck: true,
+    // stats: {
+    //     colors: true
+    // }
+});
+
+//将其他路由，全部返回index.html
+server.app.get('*', function (req, res) {
+    res.sendFile(__dirname + '/index.html');//dev version
+    // res.sendFile(__dirname + '/assets/index.html');//live version
+});
+
+server.listen(8000);
