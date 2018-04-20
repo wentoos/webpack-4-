@@ -94,6 +94,10 @@ const config = {
     },
     plugins: [
         // new MinifyPlugin({}),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            'jQuery': 'jquery'
+        }),
         new webpack.SourceMapDevToolPlugin({
             test: [".ts", ".tsx", ".js", ".css", ".less", ".json"],
             exclude: /^node_modules$/,
@@ -123,8 +127,7 @@ const server = new WebpackDevServer(compiler, {
 
 //将其他路由，全部返回index.html
 server.app.get('*', function (req, res) {
-    res.sendFile(__dirname + '/index.html');//dev version
-    // res.sendFile(__dirname + '/assets/index.html');//live version
+    res.sendFile(__dirname + '/index.html');
 });
 
 server.listen(8000);

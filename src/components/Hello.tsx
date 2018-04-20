@@ -10,7 +10,23 @@ let mySearch = function (source: string, subString: string) {
 }
 export class Hello extends React.Component<HelloProps, {}> {
     render() {
-        console.log(mySearch('11','qqqq1'));
+        interface SquareConfig {
+            color?: string;
+            width?: number;
+        }
+
+        function createSquare(config: SquareConfig): { color?: string; area?: number } {
+            let newSquare = { color: "white", area: 100 };
+            if (config.color) {
+                newSquare.color = config.color;
+            }
+            if (config.width) {
+                newSquare.area = config.width * config.width;
+            }
+            return {};
+        }
+
+        let mySquare = createSquare({ colors: "black", widths: 1 } as SquareConfig);
         return <h1>{this.props.compiler} and {this.props.framework}!</h1>;
     }
 }
