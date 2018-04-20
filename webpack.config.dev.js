@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");//css单独打�
 const HtmlWebpackPlugin = require('html-webpack-plugin'); //生成html
 const OpenBrowserPlugin = require('open-browser-webpack-plugin');//自动打开浏览器
 const MinifyPlugin = require("babel-minify-webpack-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const HappyPack = require('happypack');// 多线程操作
 const happyThreadPool = HappyPack.ThreadPool({
     size: os.cpus().length
@@ -18,15 +19,19 @@ const config = {
             'react', 'react-dom'
         ]
     },
+    performance:{
+        hints:false
+    },
     devtool: 'inline-source-map',//指向错误代码
     output: {
         path: path.resolve("", '/dist'),
-        filename: 'js/bundle.[name].[hash:8].js',
+        filename: 'js/[name].[hash:8].js',
         chunkFilename: 'js/[name].[hash:8].min.js',
         // publicPath: '/'
     },
     resolve: {
-        extensions: [".ts", ".tsx", ".js", ".css", ".less", ".json"]
+        extensions: [".ts", ".tsx", ".js", ".css", ".less", ".json"],
+        modules: [path.resolve(__dirname, "src"), "node_modules"]
     },
     optimization: {
         splitChunks: {
@@ -39,7 +44,15 @@ const config = {
                     // automaticNameDelimiter: "-"
                 }
             }
-        }
+        },
+        minimizer:[
+            new UglifyJsPlugin({
+                cache: true,
+                parallel: true,
+                sourceMap: true
+            }),
+        ]
+
     },
     module: {
         rules: [
@@ -81,6 +94,10 @@ const config = {
     },
     plugins: [
         // new MinifyPlugin({}),
+        new webpack.SourceMapDevToolPlugin({
+            test: [".ts", ".tsx", ".js", ".css", ".less", ".json"],
+            exclude: /^node_modules$/,
+        }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './template/index.html'
@@ -102,12 +119,6 @@ const config = {
 const compiler = webpack(config);
 
 const server = new WebpackDevServer(compiler, {
-
-    // publicPath: config.output.publicPath,//服务器资源路径
-    // disableHostCheck: true,
-    // stats: {
-    //     colors: true
-    // }
 });
 
 //将其他路由，全部返回index.html
